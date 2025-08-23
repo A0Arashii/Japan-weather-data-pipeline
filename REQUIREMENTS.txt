@@ -2,3 +2,5 @@ boto3
 pandas
 pyarrow
 python-dotenv
+requests
+python-dotenv
