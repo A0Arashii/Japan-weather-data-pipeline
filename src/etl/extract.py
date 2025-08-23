@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def fetch_from_csv(path: str | None = None) -> pd.DataFrame:
     csv_path = Path(path) if path else ROOT / "data" / "sample.csv"
-    df = pd.read__csv(csv_path)
+    df = pd.read_csv(csv_path)
     return df
 
 def save_raw_local(df: pd.DataFrame, date_str:str, outdir: str = "data/raw"):
