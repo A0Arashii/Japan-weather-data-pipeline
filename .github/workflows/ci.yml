@@ -2,23 +2,28 @@ name: CI
 
 on:
   push:
-    branches: [ main, "feature/**" ]
-  pull_request:
+    branches: [ main, "feature/**" ] # main이나 feature/* 브랜치에 push되면 실행
+  pull_request:                      # PR 열릴 때도 실행 
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+    runs-on: ubuntu-latest           # GitHub에서 제공하는 Ubunta VM에서 실행 
+    steps:                           # 실행 단계/절차
+      - uses: actions/checkout@v4    # 내 레포 코드를 VM(virtual machine)에 체크아웃 (필수)
+      - uses: actions/setup-python@v5 
         with:
-          python-version: "3.11"
+          python-version: "3.11"     # VM에 python 3.11 설치
       - name: Install deps
-        run: |
+        run: |                       # 의존성 설치 (requirements.txt + pytest)
           python -m pip install --upgrade pip
           pip install -r REQUIREMENTS.txt
-          pip install pytest
+          pip install pytest         
       - name: Run tests
         env:
           PYTHONPATH: ${{github.workspace}}
-        run: pytest -q
+        run: pytest -q               # pytest실행. 실패하면 워크플로우 전체 X
+
+# on: 언제 워크플로우를 실행할지 조건
+# jobs: 실행할 작업 묶음 / 여기는 test만 존재
+# steps: 각 단계 / uses: 는 GitHub가 제공하는 액션(패키지) / run: 은 쉘명령
+# run: pytest -q 에서 -q는 quiet모드. 테스트 이름만 최소 출력
