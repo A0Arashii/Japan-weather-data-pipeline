@@ -1,4 +1,5 @@
 from etl.extract import fetch_from_csv, save_raw_local, fetch_openweather_from_env
+from etl.transform import validate_weather, normalize_weather
 import sys, os
 
 if __name__ == "__main__":
@@ -13,6 +14,10 @@ if __name__ == "__main__":
 
     out = save_raw_local(df, date_str=date_str)
     print("saved to:", out, "| rows:", len(df))
+
+    df_t = normalize_weather(df)
+    rep = validate_weather(df_t)
+    print("transform report:", rep)
 
 # S3 upload
 if os.getenv("RAW_BUCKET"):
