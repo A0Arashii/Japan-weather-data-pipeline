@@ -1,6 +1,7 @@
 from etl.extract import fetch_from_csv, save_raw_local, fetch_openweather_from_env
 from etl.transform import validate_weather, normalize_weather
 from etl.load import save_processed_local_parquet, save_processed_s3_parquet
+import pandas as pd
 import sys, os
 
 if __name__ == "__main__":
@@ -12,7 +13,7 @@ if __name__ == "__main__":
         date_str = str(df.iloc[0]['date'])
     else:
         df = fetch_from_csv()
-        date_str = "2025-08-20"
+        date_str = pd.to_datetime(df["date"]).max().date().isoformat()
 
     out = save_raw_local(df, date_str=date_str)
     print("saved to:", out, "| rows:", len(df))
