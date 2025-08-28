@@ -4,3 +4,5 @@ pyarrow
 python-dotenv
 requests
 python-dotenv
+matplotlib
+jupyter
