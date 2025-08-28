@@ -59,3 +59,8 @@ Release: tag v0.1.0, add demo screenshots
 
 Python 3.11, pandas, boto3, pyarrow, AWS (S3, Lambda, Athena).
 License: MIT
+
+## Visualization Examples
+
+![avg_temp_by_date](docs/images/avg_temp_by_date.png)
+![avg_temp_by_city](docs/images/avg_temp_by_city.png)
