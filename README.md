@@ -9,6 +9,7 @@
 - (Local) Matplotlib or console output for avg temperature
 
 ## Repo Structure
+'''
 japan-weather-data-pipeline/
 ├─ README.md                # Project overview and setup
 ├─ LICENSE                 # MIT License
@@ -36,6 +37,7 @@ japan-weather-data-pipeline/
 │  └─ EDA.ipynb
 ├─ .github/workflows/      # GitHub Actions CI
 │  └─ ci.yml
+'''
 
 ## Roadmap (9-day plan → GitHub issues/PRs)
 
