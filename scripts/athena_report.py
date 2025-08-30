@@ -8,7 +8,8 @@ OUTPUT = os.getenv("ATHENA_OUTPUT", "s3://iseunggi-weather-pipeline/athena-resul
 S3_OUTPUT_BUCKET = OUTPUT.split("/")[2]
 S3_OUTPUT_PREFIX = "/".join(OUTPUT.split("/")[3:]).rstrip("/")  
 
-athena = boto3.client("athena")
+REGION = os.getenv("AWS_REGION", "ap-northeast-1")
+athena = boto3.client("athena", region_name=REGION)
 s3 = boto3.client("s3")
 
 def run_athena(sql: str) -> pd.DataFrame:
