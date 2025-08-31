@@ -2,7 +2,7 @@ name: Daily Athena Report
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # 매일 00:00 UTC = KST/JST 09:00
+    - cron: "0 0 * * *"  # 매일 00:00 UTC
   workflow_dispatch: {}
 
 jobs:
@@ -36,18 +36,16 @@ jobs:
           ATHENA_DB: weather
           ATHENA_WORKGROUP: primary
           ATHENA_OUTPUT: s3://iseunggi-weather-pipeline/athena-results/
-        run: |
-          python scripts/athena_report.py
+        run: python scripts/athena_report.py
 
-      # 실행 일자를 아티팩트 이름에 넣고 싶다면 날짜 환경변수 추가
       - name: Stamp date
-        id: stamp
         run: echo "DATE=$(date -u +%Y-%m-%d)" >> $GITHUB_ENV
 
       - name: Upload report images as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  
         with:
-          name: athena-report-${{ env.DATE }}    # 예: athena-report-2025-08-31
+          name: athena-report-${{ env.DATE }}
           path: docs/images/*.png
           if-no-files-found: warn
+          retention-days: 90
 
