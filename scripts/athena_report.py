@@ -16,13 +16,17 @@ def run_athena(sql: str) -> pd.DataFrame:
     qid = athena.start_query_execution(
         QueryString=sql,
         QueryExecutionContext={"Database": ATHENA_DB},
-        ResultConfiguration={"OutputLocation": OUTPUT},
+        ResultConfiguration={"OutputLocation": OUTPUT} if OUTPUT else {},
+        WorkGroup=WORKGROUP
     )["QueryExecutionId"]
     while True:
-        st = athena.get_query_execution(QueryExecutionId=qid)["QueryExecution"]["Status"]["State"]
+        exec_info = athena.get_query_execution(QueryExecutionId=qid)["QueryExecution"]
+        st = exec_info["Status"]["State"]
         if st in ("SUCCEEDED", "FAILED", "CANCELLED"):
             if st != "SUCCEEDED":
-                raise RuntimeError(f"Athena status={st}")
+                reason = exec_info["Status"].get("StateChangeReason", "(no reason)")
+                print(f"[Athena FAILED] QueryExecutionId={qid} reason={reason}")
+                raise RuntimeError(f"Athena status={st}: {reason}")
             break
         time.sleep(2)
     key = f"{S3_OUTPUT_PREFIX}/{qid}.csv"
@@ -36,21 +40,28 @@ def main():
     ensure_dirs()
     # 날짜별 평균 기온
     q1 = """
-    SELECT date, AVG(temp_c) AS avg_temp
+    SELECT
+      CAST(date AS DATE) AS d,
+      AVG(CAST(temp_c AS DOUBLE)) AS avg_temp
     FROM processed_weather
-    GROUP BY date
-    ORDER BY date
+    GROUP BY CAST(date AS DATE)
+    ORDER BY d
     """
     df1 = run_athena(q1)
     # 도시별 평균 기온(최근 7일)
-    q2 = """
-    SELECT city, AVG(temp_c) AS avg_temp
-    FROM processed_weather
-    WHERE date >= date_add('day', -7, current_date)
-    GROUP BY city
-    ORDER BY city
-    """
-    df2 = run_athena(q2)
+    try:
+        q2 = """
+        SELECT
+        city,
+        AVG(CAST(temp_c AS DOUBLE)) AS avg_temp
+        FROM processed_weather
+        WHERE CAST(date AS DATE) >= date_add('day', -7, current_date)
+        GROUP BY city
+        ORDER BY city
+        """
+        df2 = run_athena(q2)
+    except Exception as e:
+        print("[WARN] city 7d chart skipped:", e)
 
     # plot 1
     plt.figure()
