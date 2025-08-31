@@ -34,7 +34,9 @@ jobs:
 
       - name: Run report script
         env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           ATHENA_DB: weather
+          ATHENA_WORKGROUP: primary
           ATHENA_OUTPUT: s3://iseunggi-weather-pipeline/athena-results/
         run: python scripts/athena_report.py
 
